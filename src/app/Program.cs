@@ -1,7 +1,16 @@
+using app.Display;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddSingleton<IScreen, Screen1>();
+builder.Services.AddSingleton<IScreen, Screen2>();
+builder.Services.AddSingleton<IScreen, Screen3>();
+
+//builder.Services.AddSingleton<DisplayWorker>();
+builder.Services.AddHostedService<DisplayWorker>();
 
 var app = builder.Build();
 
