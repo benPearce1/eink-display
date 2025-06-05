@@ -1,3 +1,5 @@
+using SkiaSharp;
+
 namespace app.Display;
 
 public class Screen1 : IScreen
@@ -11,10 +13,15 @@ public class Screen1 : IScreen
         Console.WriteLine("Initialised Screen1");
     }
 
-    public async Task<int> Execute()
+    public Task Refresh(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
+
+    public async Task<SKData?> Execute()
     {
         await Task.CompletedTask;
-        return 1;
+        return null;
     }
 }
 
@@ -28,10 +35,15 @@ public class Screen2 : IScreen
         Console.WriteLine("Initialised Screen2");
     }
 
-    public async Task<int> Execute()
+    public Task Refresh(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
+
+    public async Task<SKData?> Execute()
     {
         await Task.CompletedTask;
-        return 2;
+        return null;
     }
 }
 
@@ -45,16 +57,14 @@ public class Screen3 : IScreen
         Console.WriteLine("Initialised Screen3");
     }
 
-    public async Task<int> Execute()
+    public Task Refresh(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
+
+    public async Task<SKData> Execute()
     {
         await Task.CompletedTask;
-        return 3;
+        return null;
     }
-}
-
-public interface IScreen
-{
-    string Id { get; }
-    Task Init(CancellationToken cancellationToken);
-    Task<int> Execute();
 }

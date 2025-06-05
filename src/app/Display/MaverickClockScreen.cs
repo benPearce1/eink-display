@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using SkiaSharp;
-
 
 namespace app.Display;
 
@@ -54,6 +51,9 @@ public class MaverickClockScreen : IScreen
 
         int roundedMinute = (int)(5 * Math.Round(minute / 5.0));
 
+        const string twenty = "TWENTY";
+        const string five = "FIVE";
+        const string quarter = "QUARTER";
         if (roundedMinute == 0)
         {
             active.Add(GetHourWord(hour));
@@ -63,11 +63,11 @@ public class MaverickClockScreen : IScreen
         {
             if (roundedMinute <= 30)
             {
-                if (roundedMinute == 15) active.Add("QUARTER");
-                else if (roundedMinute == 20) active.Add("TWENTY");
-                else if (roundedMinute == 25) { active.Add("TWENTY"); active.Add("FIVE"); }
+                if (roundedMinute == 15) active.Add(quarter);
+                else if (roundedMinute == 20) active.Add(twenty);
+                else if (roundedMinute == 25) { active.Add(twenty); active.Add(five); }
                 else if (roundedMinute == 30) active.Add("HALF");
-                else if (roundedMinute == 5) active.Add("FIVE");
+                else if (roundedMinute == 5) active.Add(five);
                 else if (roundedMinute == 10) active.Add("TEN");
 
                 active.Add("PAST");
@@ -78,10 +78,10 @@ public class MaverickClockScreen : IScreen
                 int minutesTo = 60 - roundedMinute;
                 int nextHour = (hour + 1) % 12;
 
-                if (minutesTo == 15) active.Add("QUARTER");
-                else if (minutesTo == 20) active.Add("TWENTY");
-                else if (minutesTo == 25) { active.Add("TWENTY"); active.Add("FIVE"); }
-                else if (minutesTo == 5) active.Add("FIVE");
+                if (minutesTo == 15) active.Add(quarter);
+                else if (minutesTo == 20) active.Add(twenty);
+                else if (minutesTo == 25) { active.Add(twenty); active.Add(five); }
+                else if (minutesTo == 5) active.Add(five);
                 else if (minutesTo == 10) active.Add("TEN");
 
                 active.Add("TO");
@@ -114,9 +114,8 @@ public class MaverickClockScreen : IScreen
         };
     }
 
-    public static void GenerateClockImage(DateTime time, string outputPath = "maverick_clock_skia.png")
+    public static SKData GenerateClockImage(DateTime time)
     {
-        int width = 800, height = 480;
         int rows = Grid.Length, cols = Grid[0].Length;
 
         var activeWords = GetActiveWords(time.Hour, time.Minute);
@@ -129,12 +128,12 @@ public class MaverickClockScreen : IScreen
                 activePositions.Add((pos.row, pos.col + i));
         }
 
-        using var surface = SKSurface.Create(new SKImageInfo(width, height));
+        using var surface = SKSurface.Create(new SKImageInfo(Constants.CanvasWidth, Constants.CanvasHeight));
         var canvas = surface.Canvas;
         canvas.Clear(SKColors.Black);
 
-        int cellWidth = width / cols;
-        int cellHeight = height / rows;
+        int cellWidth = Constants.CanvasWidth / cols;
+        int cellHeight = Constants.CanvasHeight / rows;
         int fontSize = (int)(Math.Min(cellWidth, cellHeight) * 0.8);
 
         using var paint = new SKPaint
@@ -160,23 +159,23 @@ public class MaverickClockScreen : IScreen
         }
 
         using var image = surface.Snapshot();
-        using var data = image.Encode(SKEncodedImageFormat.Png, 100);
-        using var stream = System.IO.File.OpenWrite(outputPath);
-        data.SaveTo(stream);
-
-        Console.WriteLine($"Saved word clock to: {outputPath}");
+        return image.Encode(SKEncodedImageFormat.Png, 100);
     }
 
-
-    public string Id => "MaverickClockScreen";
+    public string Id => "Maverick Clock";
     public Task Init(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }
 
-    public Task<int> Execute()
+    public async Task Refresh(CancellationToken cancellationToken)
     {
-        GenerateClockImage(DateTime.Now, "/Users/benpearce/MaverickClockScreen.png");
-        return Task.FromResult(0);
+        await Task.CompletedTask;
+    }
+
+    public async Task<SKData?> Execute()
+    {
+        await Task.Delay(0);
+        return GenerateClockImage(DateTime.Now);
     }
 }

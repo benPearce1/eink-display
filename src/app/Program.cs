@@ -9,6 +9,8 @@ builder.Services.AddControllersWithViews();
 // builder.Services.AddSingleton<IScreen, Screen2>();
 // builder.Services.AddSingleton<IScreen, Screen3>();
 builder.Services.AddSingleton<IScreen, MaverickClockScreen>();
+builder.Services.AddSingleton<IScreen, WeatherScreen>();
+
 
 
 //builder.Services.AddSingleton<DisplayWorker>();
